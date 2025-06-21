@@ -1,8 +1,9 @@
 "use client"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { Check } from "lucide-react"
+import { Check, Eye, EyeOff } from "lucide-react"
 import { BibleMemoryCard } from "@/types/bible-card"
+import { useState, useCallback, useEffect } from "react"
 
 interface BibleCardProps {
   card: BibleMemoryCard
@@ -19,8 +20,29 @@ export default function BibleCard({
   isChecked,
   onCheckToggle,
 }: BibleCardProps) {
+  const [isVerseVisible, setIsVerseVisible] = useState(false)
+  const [isClickDisabled, setIsClickDisabled] = useState(false)
+
+  // 카드가 변경될 때마다 구절을 숨김 상태로 리셋
+  useEffect(() => {
+    setIsVerseVisible(false)
+    setIsClickDisabled(false)
+  }, [card.id])
+
+  const handleVerseClick = useCallback(() => {
+    if (isClickDisabled) return
+    
+    setIsClickDisabled(true)
+    setIsVerseVisible(true) // 항상 true로 설정하여 한 번 보이면 계속 보이도록
+    
+    // 300ms 후에 다시 클릭 가능하도록 설정
+    setTimeout(() => {
+      setIsClickDisabled(false)
+    }, 300)
+  }, [isClickDisabled])
+
   return (
-    <Card className="w-full max-w-[700px] h-80 md:h-80 bg-gradient-to-br from-white via-blue-50 to-indigo-100 border-2 border-indigo-200/50 shadow-2xl select-none backdrop-blur-sm mx-auto relative">
+    <Card className="w-full max-w-[700px] h-96 md:h-[28rem] bg-gradient-to-br from-white via-blue-50 to-indigo-100 border-2 border-indigo-200/50 shadow-2xl select-none backdrop-blur-sm mx-auto relative">
       <CardContent className="p-4 md:p-8 h-full flex flex-col justify-between relative">
         {/* 카드 내부 그림자 효과 */}
         <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-black/5 rounded-lg pointer-events-none"></div>
@@ -56,15 +78,35 @@ export default function BibleCard({
 
         {/* 메인 콘텐츠 - 성경 구절 */}
         <div className="flex-1 flex flex-col justify-center relative z-10">
-          <div className="text-center">
+          <div className="text-center w-full">
             <p className="text-base md:text-lg font-medium text-indigo-600 mb-2 md:mb-3">({card.reference})</p>
-            <blockquote className="text-sm md:text-lg leading-relaxed text-gray-800 font-medium px-2 md:px-0">
-              {card.verse}
-            </blockquote>
+            <div className="w-full max-w-[500px] mx-auto">
+              <div 
+                className={`cursor-pointer group w-full ${isClickDisabled ? 'pointer-events-none' : ''}`}
+                onClick={handleVerseClick}
+              >
+                {isVerseVisible ? (
+                  <div className="min-h-[8rem] md:min-h-[10rem] flex items-center justify-center w-full">
+                    <blockquote className="text-sm md:text-lg leading-relaxed text-gray-800 font-medium px-2 md:px-0 transition-all duration-300 w-full max-w-[450px]" style={{ minWidth: '450px' }}>
+                      {card.verse}
+                    </blockquote>
+                  </div>
+                ) : (
+                  <div className="min-h-[8rem] md:min-h-[10rem] flex flex-col items-center justify-center w-full">
+                    <div className="w-16 h-16 md:w-20 md:h-20 bg-indigo-100 rounded-full flex items-center justify-center mb-3 group-hover:bg-indigo-200 transition-colors">
+                      <EyeOff className="w-8 h-8 md:w-10 md:h-10 text-indigo-600" />
+                    </div>
+                    <div className="w-full max-w-[450px] flex justify-center" style={{ minWidth: '450px' }}>
+                      <p className="text-sm md:text-base text-indigo-600 font-medium text-center">클릭하여 구절 보기</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
         {/* 하단 영역 */}
-        <div className="relative z-10">
+        <div className="relative z-10 mt-4">
           {/* 카드 번호 */}
           <div className="text-center">
             <span className="text-xs md:text-sm text-gray-500">
