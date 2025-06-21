@@ -12,12 +12,57 @@ import LoadingScreen from "./loading-screen"
 import ErrorScreen from "./error-screen"
 import InstructionBar from "./instruction-bar"
 
+const CHECKED_CARDS_STORAGE_KEY = "bible-memory-checked-cards"
+const LAST_VIEWED_CARD_INDEX_KEY = "bible-memory-last-viewed-index"
+
 export default function InteractiveBibleCard() {
   const [memoryCards, setMemoryCards] = useState<BibleMemoryCard[]>([])
   const [loading, setLoading] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [checkedCards, setCheckedCards] = useState<Set<string>>(new Set())
+
+  // localStorage에서 체크된 카드 상태와 마지막 본 카드 인덱스 복원
+  useEffect(() => {
+    try {
+      // 체크된 카드 상태 복원
+      const savedCheckedCards = localStorage.getItem(CHECKED_CARDS_STORAGE_KEY)
+      if (savedCheckedCards) {
+        const checkedCardsArray = JSON.parse(savedCheckedCards)
+        setCheckedCards(new Set(checkedCardsArray))
+      }
+
+      // 마지막 본 카드 인덱스 복원
+      const savedLastIndex = localStorage.getItem(LAST_VIEWED_CARD_INDEX_KEY)
+      if (savedLastIndex) {
+        const lastIndex = parseInt(savedLastIndex, 10)
+        if (!isNaN(lastIndex) && lastIndex >= 0) {
+          setCurrentIndex(lastIndex)
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load data from localStorage:", error)
+    }
+  }, [])
+
+  // 체크된 카드 상태가 변경될 때마다 localStorage에 저장
+  useEffect(() => {
+    try {
+      const checkedCardsArray = Array.from(checkedCards)
+      localStorage.setItem(CHECKED_CARDS_STORAGE_KEY, JSON.stringify(checkedCardsArray))
+    } catch (error) {
+      console.error("Failed to save checked cards to localStorage:", error)
+    }
+  }, [checkedCards])
+
+  // 현재 카드 인덱스가 변경될 때마다 localStorage에 저장
+  useEffect(() => {
+    try {
+      localStorage.setItem(LAST_VIEWED_CARD_INDEX_KEY, currentIndex.toString())
+    } catch (error) {
+      console.error("Failed to save last viewed index to localStorage:", error)
+    }
+  }, [currentIndex])
 
   // 커스텀 훅으로 카드 인터랙션 로직 분리
   const {
