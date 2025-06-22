@@ -1,0 +1,19 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="128" fill="#4f46e5"/>
+  <rect x="64" y="64" width="384" height="384" rx="96" fill="#6366f1"/>
+  
+  <!-- 성경 책 모양 -->
+  <rect x="128" y="128" width="256" height="320" rx="16" fill="#ffffff"/>
+  <rect x="144" y="144" width="224" height="288" rx="8" fill="#f8fafc"/>
+  
+  <!-- 책장선 -->
+  <line x1="256" y1="144" x2="256" y2="432" stroke="#e2e8f0" stroke-width="2"/>
+  <line x1="144" y1="200" x2="368" y2="200" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="144" y1="256" x2="368" y2="256" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="144" y1="312" x2="368" y2="312" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="144" y1="368" x2="368" y2="368" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- 체크마크 -->
+  <circle cx="320" cy="320" r="32" fill="#10b981"/>
+  <path d="M308 320L318 330L332 316" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg> 

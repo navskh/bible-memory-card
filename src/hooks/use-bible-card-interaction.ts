@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 
 interface UseBibleCardInteractionProps {
   totalCards: number
@@ -22,25 +22,25 @@ export function useBibleCardInteraction({
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const clickPositionRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (isAnimating) return
     setIsDragging(true)
     setStartX(e.clientX)
     setStartY(e.clientY)
     clickPositionRef.current = { x: e.clientX, y: e.clientY }
     e.preventDefault()
-  }
+  }, [isAnimating])
 
-  const handleTouchStart = (e: React.TouchEvent) => {
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if (isAnimating) return
     setIsDragging(true)
     setStartX(e.touches[0].clientX)
     setStartY(e.touches[0].clientY)
     clickPositionRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY }
     e.preventDefault()
-  }
+  }, [isAnimating])
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging || isAnimating) return
 
     const deltaX = e.clientX - startX
@@ -52,9 +52,9 @@ export function useBibleCardInteraction({
 
     setRotateY(newRotateY)
     setRotateX(newRotateX)
-  }
+  }, [isDragging, isAnimating, startX, startY])
 
-  const handleTouchMove = (e: TouchEvent) => {
+  const handleTouchMove = useCallback((e: TouchEvent) => {
     if (!isDragging || isAnimating) return
 
     const deltaX = e.touches[0].clientX - startX
@@ -66,15 +66,15 @@ export function useBibleCardInteraction({
 
     setRotateY(newRotateY)
     setRotateX(newRotateX)
-  }
+  }, [isDragging, isAnimating, startX, startY])
 
-  const handleEnd = () => {
+  const handleEnd = useCallback(() => {
     setIsDragging(false)
     setRotateX(0)
     setRotateY(0)
-  }
+  }, [])
 
-  const handleDoubleClick = () => {
+  const handleDoubleClick = useCallback(() => {
     if (isAnimating) return
 
     const cardElement = cardRef.current
@@ -104,9 +104,9 @@ export function useBibleCardInteraction({
     setTimeout(() => {
       setIsAnimating(false)
     }, 500)
-  }
+  }, [isAnimating, currentIndex, totalCards, onIndexChange])
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = useCallback((e: React.MouseEvent) => {
     clickPositionRef.current = { x: e.clientX, y: e.clientY }
 
     if (clickTimeoutRef.current) {
@@ -118,7 +118,7 @@ export function useBibleCardInteraction({
         clickTimeoutRef.current = null
       }, 300)
     }
-  }
+  }, [handleDoubleClick])
 
   useEffect(() => {
     if (isDragging) {

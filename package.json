@@ -1,12 +1,14 @@
 {
-  "name": "my-next-app",
+  "name": "bible-memory-app",
   "version": "0.1.0",
   "private": true,
+  "description": "성경 구절을 효과적으로 암송할 수 있는 PWA 앱",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "generate-icons": "node scripts/generate-icons.js"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",

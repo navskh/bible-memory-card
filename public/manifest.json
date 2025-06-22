@@ -1,0 +1,20 @@
+{
+  "name": "성경 암송 앱",
+  "short_name": "성경암송",
+  "description": "성경 구절을 효과적으로 암송할 수 있는 PWA 앱",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e293b",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "ko",
+  "categories": ["education", "productivity", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icons/512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+} 
