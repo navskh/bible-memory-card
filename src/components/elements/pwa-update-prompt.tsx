@@ -1,82 +1,85 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { X, RefreshCw, Info, Clock } from "lucide-react"
+import { useState, useEffect, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import { X, RefreshCw, Info, Clock } from 'lucide-react';
 
 export default function PWAUpdatePrompt() {
-  const [showUpdatePrompt, setShowUpdatePrompt] = useState(false)
-  const [isUpdating, setIsUpdating] = useState(false)
-  const [autoHideTimer, setAutoHideTimer] = useState<NodeJS.Timeout | null>(null)
+  const [showUpdatePrompt, setShowUpdatePrompt] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const autoHideTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // 업데이트 발견 이벤트 리스너
     const handleUpdateFound = () => {
-      console.log('업데이트 알림 표시')
-      setShowUpdatePrompt(true)
-      
-      // 30초 후 자동으로 숨김
-      const timer = setTimeout(() => {
-        setShowUpdatePrompt(false)
-      }, 30000)
-      
-      setAutoHideTimer(timer)
-    }
+      console.log('업데이트 알림 표시');
+      setShowUpdatePrompt(true);
 
-    window.addEventListener('sw-update-found', handleUpdateFound)
+      // 이전 타이머가 있으면 정리
+      if (autoHideTimerRef.current) {
+        clearTimeout(autoHideTimerRef.current);
+      }
+
+      // 30초 후 자동으로 숨김
+      autoHideTimerRef.current = setTimeout(() => {
+        setShowUpdatePrompt(false);
+      }, 30000);
+    };
+
+    window.addEventListener('sw-update-found', handleUpdateFound);
 
     return () => {
-      window.removeEventListener('sw-update-found', handleUpdateFound)
-      if (autoHideTimer) {
-        clearTimeout(autoHideTimer)
+      window.removeEventListener('sw-update-found', handleUpdateFound);
+      if (autoHideTimerRef.current) {
+        clearTimeout(autoHideTimerRef.current);
       }
-    }
-  }, [autoHideTimer])
+    };
+  }, []);
 
   const handleUpdate = async () => {
-    setIsUpdating(true)
-    
+    setIsUpdating(true);
+
     try {
       // Service Worker에 업데이트 적용 메시지 전송
       if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage({
-          type: 'SKIP_WAITING'
-        })
+          type: 'SKIP_WAITING',
+        });
       }
-      
+
       // 잠시 대기 후 페이지 새로고침
       setTimeout(() => {
-        window.location.reload()
-      }, 1000)
+        window.location.reload();
+      }, 1000);
     } catch (error) {
-      console.error('업데이트 중 오류:', error)
-      setIsUpdating(false)
+      console.error('업데이트 중 오류:', error);
+      setIsUpdating(false);
     }
-  }
+  };
 
   const handleDismiss = () => {
-    setShowUpdatePrompt(false)
-    if (autoHideTimer) {
-      clearTimeout(autoHideTimer)
-      setAutoHideTimer(null)
+    setShowUpdatePrompt(false);
+    if (autoHideTimerRef.current) {
+      clearTimeout(autoHideTimerRef.current);
+      autoHideTimerRef.current = null;
     }
-  }
+  };
 
   const handleRemindLater = () => {
-    setShowUpdatePrompt(false)
-    if (autoHideTimer) {
-      clearTimeout(autoHideTimer)
-      setAutoHideTimer(null)
+    setShowUpdatePrompt(false);
+    if (autoHideTimerRef.current) {
+      clearTimeout(autoHideTimerRef.current);
+      autoHideTimerRef.current = null;
     }
-    
+
     // 5분 후 다시 알림 표시
     setTimeout(() => {
-      window.dispatchEvent(new CustomEvent('sw-update-found'))
-    }, 5 * 60 * 1000)
-  }
+      window.dispatchEvent(new CustomEvent('sw-update-found'));
+    }, 5 * 60 * 1000);
+  };
 
   if (!showUpdatePrompt) {
-    return null
+    return null;
   }
 
   return (
@@ -102,7 +105,7 @@ export default function PWAUpdatePrompt() {
           <X className="w-4 h-4" />
         </button>
       </div>
-      
+
       <div className="flex gap-2">
         <Button
           onClick={handleUpdate}
@@ -110,7 +113,9 @@ export default function PWAUpdatePrompt() {
           size="sm"
           className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
         >
-          <RefreshCw className={`w-4 h-4 mr-2 ${isUpdating ? 'animate-spin' : ''}`} />
+          <RefreshCw
+            className={`w-4 h-4 mr-2 ${isUpdating ? 'animate-spin' : ''}`}
+          />
           {isUpdating ? '업데이트 중...' : '지금 업데이트'}
         </Button>
         <Button
@@ -123,5 +128,5 @@ export default function PWAUpdatePrompt() {
         </Button>
       </div>
     </div>
-  )
-} 
+  );
+}

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bible-memory-v1.5';
+const CACHE_NAME = 'bible-memory-v1.4';
 const urlsToCache = ['/', '/manifest.json', '/icons/512.png'];
 
 // Service Worker 설치
