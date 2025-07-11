@@ -1,68 +1,95 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Menu } from "lucide-react"
-import { loadDEP242Data, transformToBibleCards } from "@/lib/utils"
-import { useBibleCardInteraction } from "@/hooks/use-bible-card-interaction"
-import { BibleMemoryCard } from "@/types/bible-card"
-import BibleCard from "./bible-card"
-import BibleCardSidebar from "./bible-card-sidebar"
-import LoadingScreen from "./loading-screen"
-import ErrorScreen from "./error-screen"
-import InstructionBar from "./instruction-bar"
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Menu } from 'lucide-react';
+import {
+  load60VerseData,
+  transform60VerseToBibleCards,
+  loadDEP242Data,
+  transformToBibleCards,
+} from '@/lib/utils';
+import { useBibleCardInteraction } from '@/hooks/use-bible-card-interaction';
+import { BibleMemoryCard } from '@/types/bible-card';
+import BibleCard from './bible-card';
+import BibleCardSidebar from './bible-card-sidebar';
+import LoadingScreen from './loading-screen';
+import ErrorScreen from './error-screen';
+import InstructionBar from './instruction-bar';
 
-const CHECKED_CARDS_STORAGE_KEY = "bible-memory-checked-cards"
-const LAST_VIEWED_CARD_INDEX_KEY = "bible-memory-last-viewed-index"
+const CHECKED_CARDS_STORAGE_KEY = 'bible-memory-checked-cards';
+const LAST_VIEWED_CARD_INDEX_KEY = 'bible-memory-last-viewed-index';
+const CURRENT_MODE_KEY = 'bible-memory-current-mode';
+
+type BibleMode = '60verse' | '242verse';
 
 export default function InteractiveBibleCard() {
-  const [memoryCards, setMemoryCards] = useState<BibleMemoryCard[]>([])
-  const [loading, setLoading] = useState(true)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [checkedCards, setCheckedCards] = useState<Set<string>>(new Set())
+  const [memoryCards, setMemoryCards] = useState<BibleMemoryCard[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [checkedCards, setCheckedCards] = useState<Set<string>>(new Set());
+  const [currentMode, setCurrentMode] = useState<BibleMode>('60verse');
 
-  // localStorage에서 체크된 카드 상태와 마지막 본 카드 인덱스 복원
+  // localStorage에서 상태 복원
   useEffect(() => {
     try {
       // 체크된 카드 상태 복원
-      const savedCheckedCards = localStorage.getItem(CHECKED_CARDS_STORAGE_KEY)
+      const savedCheckedCards = localStorage.getItem(CHECKED_CARDS_STORAGE_KEY);
       if (savedCheckedCards) {
-        const checkedCardsArray = JSON.parse(savedCheckedCards)
-        setCheckedCards(new Set(checkedCardsArray))
+        const checkedCardsArray = JSON.parse(savedCheckedCards);
+        setCheckedCards(new Set(checkedCardsArray));
       }
 
       // 마지막 본 카드 인덱스 복원
-      const savedLastIndex = localStorage.getItem(LAST_VIEWED_CARD_INDEX_KEY)
+      const savedLastIndex = localStorage.getItem(LAST_VIEWED_CARD_INDEX_KEY);
       if (savedLastIndex) {
-        const lastIndex = parseInt(savedLastIndex, 10)
+        const lastIndex = parseInt(savedLastIndex, 10);
         if (!isNaN(lastIndex) && lastIndex >= 0) {
-          setCurrentIndex(lastIndex)
+          setCurrentIndex(lastIndex);
         }
       }
+
+      // 현재 모드 복원
+      const savedMode = localStorage.getItem(CURRENT_MODE_KEY);
+      if (savedMode && (savedMode === '60verse' || savedMode === '242verse')) {
+        setCurrentMode(savedMode as BibleMode);
+      }
     } catch (error) {
-      console.error("Failed to load data from localStorage:", error)
+      console.error('Failed to load data from localStorage:', error);
     }
-  }, [])
+  }, []);
 
   // 체크된 카드 상태가 변경될 때마다 localStorage에 저장
   useEffect(() => {
     try {
-      const checkedCardsArray = Array.from(checkedCards)
-      localStorage.setItem(CHECKED_CARDS_STORAGE_KEY, JSON.stringify(checkedCardsArray))
+      const checkedCardsArray = Array.from(checkedCards);
+      localStorage.setItem(
+        CHECKED_CARDS_STORAGE_KEY,
+        JSON.stringify(checkedCardsArray),
+      );
     } catch (error) {
-      console.error("Failed to save checked cards to localStorage:", error)
+      console.error('Failed to save checked cards to localStorage:', error);
     }
-  }, [checkedCards])
+  }, [checkedCards]);
 
   // 현재 카드 인덱스가 변경될 때마다 localStorage에 저장
   useEffect(() => {
     try {
-      localStorage.setItem(LAST_VIEWED_CARD_INDEX_KEY, currentIndex.toString())
+      localStorage.setItem(LAST_VIEWED_CARD_INDEX_KEY, currentIndex.toString());
     } catch (error) {
-      console.error("Failed to save last viewed index to localStorage:", error)
+      console.error('Failed to save last viewed index to localStorage:', error);
     }
-  }, [currentIndex])
+  }, [currentIndex]);
+
+  // 현재 모드가 변경될 때마다 localStorage에 저장
+  useEffect(() => {
+    try {
+      localStorage.setItem(CURRENT_MODE_KEY, currentMode);
+    } catch (error) {
+      console.error('Failed to save current mode to localStorage:', error);
+    }
+  }, [currentMode]);
 
   // 커스텀 훅으로 카드 인터랙션 로직 분리
   const {
@@ -79,55 +106,71 @@ export default function InteractiveBibleCard() {
     totalCards: memoryCards.length,
     currentIndex,
     onIndexChange: setCurrentIndex,
-  })
+  });
 
-  // JSON 파일들에서 데이터 불러오기
+  // 모드에 따라 데이터 불러오기
   useEffect(() => {
     const loadData = async () => {
       try {
-        setLoading(true)
-        const depData = await loadDEP242Data()
-        const cards = transformToBibleCards(depData)
-        setMemoryCards(cards)
+        setLoading(true);
+        let cards: BibleMemoryCard[] = [];
+
+        if (currentMode === '60verse') {
+          const verseData = await load60VerseData();
+          cards = transform60VerseToBibleCards(verseData);
+        } else {
+          const depData = await loadDEP242Data();
+          cards = transformToBibleCards(depData);
+        }
+
+        setMemoryCards(cards);
+        // 모드가 바뀌면 첫 번째 카드로 리셋
+        setCurrentIndex(0);
+        // 체크된 카드도 리셋 (모드가 바뀌면 다른 카드들이므로)
+        setCheckedCards(new Set());
       } catch (error) {
-        console.error("Failed to load DEP242 data:", error)
+        console.error(`Failed to load ${currentMode} data:`, error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    loadData()
-  }, [])
+    loadData();
+  }, [currentMode]);
 
-  const currentCard = memoryCards[currentIndex]
+  const currentCard = memoryCards[currentIndex];
 
   const handleCardSelect = (index: number) => {
     if (index !== currentIndex) {
-      setCurrentIndex(index)
+      setCurrentIndex(index);
     }
-    setSidebarOpen(false) // 모바일에서 카드 선택 후 사이드바 닫기
-  }
+    setSidebarOpen(false); // 모바일에서 카드 선택 후 사이드바 닫기
+  };
 
   const handleCheckToggle = (cardId: string) => {
-    setCheckedCards((prev) => {
-      const newSet = new Set(prev)
+    setCheckedCards(prev => {
+      const newSet = new Set(prev);
       if (newSet.has(cardId)) {
-        newSet.delete(cardId)
+        newSet.delete(cardId);
       } else {
-        newSet.add(cardId)
+        newSet.add(cardId);
       }
-      return newSet
-    })
-  }
+      return newSet;
+    });
+  };
+
+  const handleModeToggle = () => {
+    setCurrentMode(prev => (prev === '60verse' ? '242verse' : '60verse'));
+  };
 
   // 로딩 중일 때 표시할 컴포넌트
   if (loading) {
-    return <LoadingScreen />
+    return <LoadingScreen />;
   }
 
   // 데이터가 없을 때 표시할 컴포넌트
   if (memoryCards.length === 0) {
-    return <ErrorScreen />
+    return <ErrorScreen />;
   }
 
   return (
@@ -141,11 +184,15 @@ export default function InteractiveBibleCard() {
         onSidebarClose={() => setSidebarOpen(false)}
         onCardSelect={handleCardSelect}
         onCheckToggle={handleCheckToggle}
+        currentMode={currentMode}
       />
 
       {/* 사이드바 오버레이 (모바일) */}
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
       )}
 
       {/* 메인 콘텐츠 */}
@@ -163,18 +210,30 @@ export default function InteractiveBibleCard() {
           <Menu className="w-4 h-4 text-white" />
         </Button>
 
+        {/* 모드 토글 버튼 */}
+        <Button
+          variant="secondary"
+          size="sm"
+          className="absolute top-4 right-4 z-30 bg-white/20 backdrop-blur-md border-white/30 hover:bg-white/30"
+          onClick={handleModeToggle}
+        >
+          <span className="text-white font-medium">
+            {currentMode === '60verse' ? '60구절' : '242구절'}
+          </span>
+        </Button>
+
         {/* 3D 카드 컨테이너 */}
         <div
           className="perspective-1000 relative"
           style={{
-            perspective: "1200px",
-            transformStyle: "preserve-3d",
-            width: "100%",
-            maxWidth: "800px",
-            height: "400px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            perspective: '1200px',
+            transformStyle: 'preserve-3d',
+            width: '100%',
+            maxWidth: '800px',
+            height: '400px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           <div
@@ -183,17 +242,21 @@ export default function InteractiveBibleCard() {
             style={{
               transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
               transition: isDragging
-                ? "none"
+                ? 'none'
                 : isAnimating
-                  ? "transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)"
-                  : "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
-              transformStyle: "preserve-3d",
-              cursor: isAnimating ? "default" : isDragging ? "grabbing" : "grab",
+                ? 'transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                : 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+              transformStyle: 'preserve-3d',
+              cursor: isAnimating
+                ? 'default'
+                : isDragging
+                ? 'grabbing'
+                : 'grab',
               animation: isAnimating
-                ? animationDirection === "next"
-                  ? "slideFromRight 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)"
-                  : "slideFromLeft 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)"
-                : "none",
+                ? animationDirection === 'next'
+                  ? 'slideFromRight 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                  : 'slideFromLeft 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+                : 'none',
             }}
             onMouseDown={handleMouseDown}
             onTouchStart={handleTouchStart}
@@ -247,5 +310,5 @@ export default function InteractiveBibleCard() {
         }
       `}</style>
     </div>
-  )
+  );
 }

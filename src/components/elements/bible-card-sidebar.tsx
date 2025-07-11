@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { X, Check } from 'lucide-react';
 import { BibleMemoryCard } from '@/types/bible-card';
 
+type BibleMode = '60verse' | '242verse';
+
 interface BibleCardSidebarProps {
   memoryCards: BibleMemoryCard[];
   currentIndex: number;
@@ -12,6 +14,7 @@ interface BibleCardSidebarProps {
   onSidebarClose: () => void;
   onCardSelect: (index: number) => void;
   onCheckToggle: (cardId: string) => void;
+  currentMode: BibleMode;
 }
 
 export default function BibleCardSidebar({
@@ -22,16 +25,38 @@ export default function BibleCardSidebar({
   onSidebarClose,
   onCardSelect,
   onCheckToggle,
+  currentMode,
 }: BibleCardSidebarProps) {
-  // 날짜별로 카드들을 그룹화
+  // 모드에 따라 그룹화 방식 결정
   const groupedCards = memoryCards.reduce((groups, card) => {
-    const day = card.day;
-    if (!groups[day]) {
-      groups[day] = [];
+    let groupKey: string | number;
+
+    if (currentMode === '60verse') {
+      // 60구절: 카테고리별로 그룹화
+      groupKey = card.mainTitle;
+    } else {
+      // 242구절: 날짜별로 그룹화
+      groupKey = card.day;
     }
-    groups[day].push(card);
+
+    if (!groups[groupKey]) {
+      groups[groupKey] = [];
+    }
+    groups[groupKey].push(card);
     return groups;
-  }, {} as Record<number, BibleMemoryCard[]>);
+  }, {} as Record<string | number, BibleMemoryCard[]>);
+
+  const getSidebarTitle = () => {
+    return currentMode === '60verse' ? '60구절 암송 카드' : 'DEP242 암송 카드';
+  };
+
+  const getGroupTitle = (key: string | number) => {
+    if (currentMode === '60verse') {
+      return key as string; // 카테고리명
+    } else {
+      return `${key}일차`; // 날짜
+    }
+  };
 
   return (
     <div
@@ -43,7 +68,7 @@ export default function BibleCardSidebar({
         {/* 헤더 */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-indigo-800">
-            DEP242 암송 카드
+            {getSidebarTitle()}
           </h2>
           <Button variant="ghost" size="sm" onClick={onSidebarClose}>
             <X className="w-4 h-4" />
@@ -67,16 +92,16 @@ export default function BibleCardSidebar({
 
         {/* 카드 목록 */}
         <div className="flex-1 overflow-y-auto space-y-4">
-          {Object.entries(groupedCards).map(([day, cards]) => (
-            <div key={day} className="space-y-2">
-              {/* 날짜 헤더 */}
+          {Object.entries(groupedCards).map(([key, cards]) => (
+            <div key={key} className="space-y-2">
+              {/* 그룹 헤더 */}
               <div className="sticky top-0 bg-white/80 backdrop-blur-sm py-2 border-b border-gray-200">
                 <h3 className="font-semibold text-indigo-700 text-base">
-                  {day}일차
+                  {getGroupTitle(key)}
                 </h3>
               </div>
 
-              {/* 해당 날짜의 카드들 */}
+              {/* 해당 그룹의 카드들 */}
               {cards.map(card => {
                 const cardIndex = memoryCards.findIndex(c => c.id === card.id);
                 return (
@@ -113,13 +138,10 @@ export default function BibleCardSidebar({
                           {card.subTitle}
                         </div>
                         {card.subSubTitle && (
-                          <div className="text-sm text-gray-600 mb-1">
+                          <div className="text-sm text-indigo-600 mb-1">
                             {card.subSubTitle}
                           </div>
                         )}
-                        <div className="text-sm text-indigo-600 mb-1">
-                          ({card.reference})
-                        </div>
                         <div className="text-sm text-gray-600 line-clamp-2">
                           {card.verse.substring(0, 50)}...
                         </div>
