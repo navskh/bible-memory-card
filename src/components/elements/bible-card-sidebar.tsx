@@ -42,7 +42,7 @@ export default function BibleCardSidebar({
     if (!groups[groupKey]) {
       groups[groupKey] = [];
     }
-    groups[groupKey].push(card);
+    groups[groupKey]?.push(card);
     return groups;
   }, {} as Record<string | number, BibleMemoryCard[]>);
 

@@ -100,10 +100,10 @@ export function transformToBibleCards(
         id: `${dayData.day}-${index + 1}`,
         day: dayData.day,
         mainTitle: dayData.title,
-        subTitle: item.대제목,
-        subSubTitle: item.중제목 || '',
-        reference: item.verse,
-        verse: item.text,
+        subTitle: item.대제목 ?? '',
+        subSubTitle: item.중제목 ?? '',
+        reference: item.verse ?? '',
+        verse: item.text ?? '',
         originalIndex: index,
       });
     });

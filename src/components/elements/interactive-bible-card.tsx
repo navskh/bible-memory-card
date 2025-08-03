@@ -263,10 +263,10 @@ export default function InteractiveBibleCard() {
             onClick={handleClick}
           >
             <BibleCard
-              card={currentCard}
+              card={currentCard ?? ({} as BibleMemoryCard)}
               cardIndex={currentIndex}
               totalCards={memoryCards.length}
-              isChecked={checkedCards.has(currentCard.id)}
+              isChecked={checkedCards.has(currentCard?.id ?? '')}
               onCheckToggle={handleCheckToggle}
             />
           </div>

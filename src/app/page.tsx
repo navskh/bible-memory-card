@@ -1,13 +1,6 @@
-import InteractiveBibleCard from "@/components/elements/interactive-bible-card";
-import PWAInstallPrompt from "@/components/elements/pwa-install-prompt";
-import ServiceWorkerRegister from "@/components/elements/service-worker-register";
+// app/page.tsx
+import { redirect } from 'next/navigation';
 
-export default function Page() {
-  return (
-    <>
-      <InteractiveBibleCard />
-      <PWAInstallPrompt />
-      <ServiceWorkerRegister />
-    </>
-  )
+export default function Home() {
+  redirect('/dep/1'); // ✅ 여기서 바로 리다이렉트
 }

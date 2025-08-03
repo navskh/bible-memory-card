@@ -4,16 +4,6 @@ import './globals.css';
 import ServiceWorkerRegister from '@/components/elements/service-worker-register';
 import PWAUpdatePrompt from '@/components/elements/pwa-update-prompt';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
-
 export const metadata: Metadata = {
   title: '성경 암송 앱',
   description: '성경 구절을 효과적으로 암송할 수 있는 PWA 앱',
@@ -80,9 +70,7 @@ export default function RootLayout({
         <link rel="mask-icon" href="/icons/icon-192x192.png" color="#4f46e5" />
         <link rel="shortcut icon" href="/icons/icon-192x192.png" />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className="antialiased">
         {children}
         <ServiceWorkerRegister />
         <PWAUpdatePrompt />
