@@ -1,4 +1,3 @@
-import NewCarousel from '@/components/animata/carousel/new-carousel';
 import BibleMemorySeries from '@/components/template/bible-memory-series';
 
 export default async function BibleMemorySeriesPage({

@@ -68,7 +68,7 @@ export default function CardSkew({
   const [isView, setIsView] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const resetRef = useRef<NodeJS.Timeout | null>(null);
-  const [transX, setTransX] = useState(0);
+  const [, setTransX] = useState(0);
 
   const update = useCallback(({ x, y }: { x: number; y: number }) => {
     if (!containerRef.current) {

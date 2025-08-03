@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import ServiceWorkerRegister from '@/components/elements/service-worker-register';
 import PWAUpdatePrompt from '@/components/elements/pwa-update-prompt';

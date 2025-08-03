@@ -17,14 +17,6 @@ interface IMyCarouselProps {
   injectedIndex?: number;
 }
 
-const SLIDER_WIDTH = 400;
-
-const inrange = (v: number, min: number, max: number) => {
-  if (v < min) return min;
-  if (v > max) return max;
-  return v;
-};
-
 export default function MyCarousel({
   items: initialItems,
   injectedIndex,
