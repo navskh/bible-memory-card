@@ -22,6 +22,13 @@ export default function BibleMemorySeries({ day }: { day: string }) {
   const [mode, setMode] = useState<'60구절' | 'DEP 242'>('60구절');
 
   useEffect(() => {
+    const mode = localStorage.getItem('mode');
+    if (mode) {
+      setMode(mode as '60구절' | 'DEP 242');
+    }
+  }, []);
+
+  useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
@@ -65,12 +72,19 @@ export default function BibleMemorySeries({ day }: { day: string }) {
         tabs={['60구절', 'DEP 242']}
         selected={mode}
         onSelect={tab => {
-          console.log(tab);
+          localStorage.setItem('mode', tab);
           setMode(tab as '60구절' | 'DEP 242');
         }}
       />
-      <MenuButton />
-      <VerseButton verseList={cards} setInjectedIndex={setInjectedIndex} />
+      {mode === '60구절' && (
+        <VerseButton verseList={cards} setInjectedIndex={setInjectedIndex} />
+      )}
+      {mode === 'DEP 242' && (
+        <>
+          <MenuButton />
+          <VerseButton verseList={cards} setInjectedIndex={setInjectedIndex} />
+        </>
+      )}
 
       {cards.length > 0 && (
         <MyCarousel items={cards} injectedIndex={injectedIndex} />

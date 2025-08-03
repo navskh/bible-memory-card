@@ -130,7 +130,7 @@ export default function StaggeredCard({
                     }}
                   >
                     <a
-                      className="relative z-10 block w-full cursor-pointer rounded-lg px-8 py-3.5 text-center text-neutral-200"
+                      className="relative z-10 block max-w-65 overflow-hidden text-ellipsis whitespace-nowrap cursor-pointer rounded-lg px-8 py-3.5 text-center text-neutral-200"
                       data-index={link.index}
                       onClick={e => clickHandler(e, link.href)}
                     >

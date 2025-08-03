@@ -62,9 +62,9 @@ const convert60VerseToBibleCards = (data: any) => {
     text: string;
   }> = [];
 
-  data.verses.forEach((verse: any) => {
+  data.verses.forEach((verse: any, index: number) => {
     cards.push({
-      id: verse.id,
+      id: index.toString(),
       heading1: verse.id,
       heading2: verse.category,
       heading3: verse.subcategory,

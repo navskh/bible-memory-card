@@ -9,7 +9,7 @@ const MenuButton = () => {
 
   return (
     <StaggeredCard
-      className="absolute top-12 left-10 text-xl"
+      className="absolute top-25 left-42 text-xl"
       title="PART 선택"
       links={linkList}
     />
