@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation';
+import BibleMemorySeriesPage from './dep/[day]/page';
 
 export default function Home() {
-  redirect('/dep/1');
+  return <BibleMemorySeriesPage />;
 }

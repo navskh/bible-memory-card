@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import ServiceWorkerRegister from '@/components/elements/service-worker-register';
-import PWAUpdatePrompt from '@/components/elements/pwa-update-prompt';
 
 export const metadata: Metadata = {
   title: '성경 암송 앱',
@@ -69,11 +67,7 @@ export default function RootLayout({
         <link rel="mask-icon" href="/icons/icon-192x192.png" color="#4f46e5" />
         <link rel="shortcut icon" href="/icons/icon-192x192.png" />
       </head>
-      <body className="antialiased">
-        {children}
-        <ServiceWorkerRegister />
-        <PWAUpdatePrompt />
-      </body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }
