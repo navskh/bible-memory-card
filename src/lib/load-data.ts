@@ -9,6 +9,25 @@ const loadDepByDate = async (date: string) => {
   }
 };
 
+const getDepTitle = () => {
+  return [
+    '1일차 (Ⅰ.구원의 확신)',
+    '2일차 (Ⅱ.Quiet Time)',
+    '3일차 (Ⅱ.Quiet Time, Ⅲ.말씀)',
+    '4일차 (Ⅲ.말씀)',
+    '5일차 (Ⅲ.말씀,Ⅳ.기도)',
+    '6일차 (Ⅳ.기도)',
+    '7일차 (Ⅳ.기도, Ⅴ.교제)',
+    '8일차 (Ⅴ.교제)',
+    '9일차 (Ⅴ.교제, Ⅵ.증거)',
+    '10일차 (Ⅵ.증거)',
+    '11일차 (Ⅵ.증거)',
+    '12일차 (Ⅵ.증거, Ⅶ.주재권)',
+    '13일차 (Ⅶ.주재권)',
+    '14일차 (Ⅷ.세계비전)',
+  ];
+};
+
 const load60Verse = async () => {
   try {
     const data = await import(`@/assets/60verse/60verse.json`);
@@ -81,4 +100,5 @@ export {
   convertDepDataToBibleCards,
   load60Verse,
   convert60VerseToBibleCards,
+  getDepTitle,
 };

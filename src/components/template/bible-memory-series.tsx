@@ -36,7 +36,6 @@ export default function BibleMemorySeries({ day }: { day: string }) {
           const depData = await loadDepByDate(day);
           setTitle(depData.title);
           const cards = convertDepDataToBibleCards(depData);
-          console.log(cards);
           setCards(cards);
         } else {
           const bibleData = await load60Verse();
