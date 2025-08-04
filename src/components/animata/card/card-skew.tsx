@@ -40,7 +40,7 @@ function calculateCardRotation({
   ).toFixed(2);
   return { rotationX, rotationY };
 }
-const SLIDER_WIDTH = 400;
+const SLIDER_WIDTH = 40;
 
 const inrange = (v: number, min: number, max: number) => {
   if (v < min) return min;
@@ -68,7 +68,7 @@ export default function CardSkew({
   const [isView, setIsView] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const resetRef = useRef<NodeJS.Timeout | null>(null);
-  const [, setTransX] = useState(0);
+  const [transX, setTransX] = useState(0);
 
   const update = useCallback(({ x, y }: { x: number; y: number }) => {
     if (!containerRef.current) {
@@ -97,10 +97,23 @@ export default function CardSkew({
           setIsView(true);
         }
       }}
-      onDoubleClick={() => {
+      onDoubleClick={e => {
+        e.preventDefault();
+        e.stopPropagation();
         if (isFocus) {
           setIsView(false);
         }
+      }}
+      onTouchStart={e => {
+        e.preventDefault();
+        e.stopPropagation();
+        setTimeout(() => {
+          console.log('✅ 꾹 눌렀습니다!');
+          // 여기에 원하는 long press 동작 실행
+          if (isFocus) {
+            setIsView(false);
+          }
+        }, 500); // 500ms 이상 누르면 long press
       }}
       {...registDragEvent({
         onDragChange: deltaX => {
@@ -115,7 +128,7 @@ export default function CardSkew({
         className,
       )}
       style={{
-        transform: `perspective(400px) rotateX(var(--x)) rotateY(var(--y))`,
+        transform: `translateX(${transX}px) perspective(400px) rotateX(var(--x)) rotateY(var(--y))`,
         transitionDuration: '50ms',
       }}
       onMouseEnter={() => {
@@ -151,7 +164,7 @@ export default function CardSkew({
       </span>
 
       <p className="text-m font-medium text-zinc-400 break-keep whitespace-pre-line select-none">
-        {isView ? text : <EyeOff className="w-14 h-14 md:w-20 md:h-20" />}
+        {isView ? text : <EyeOff className="w-14 h-14 md:w-20 md:h-25" />}
       </p>
     </div>
   );

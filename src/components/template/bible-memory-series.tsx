@@ -58,7 +58,7 @@ export default function BibleMemorySeries({ day }: { day: string }) {
     return <NewLoadingScreen />;
   }
   return (
-    <Dot className="font-sans h-screen w-screen max-w-full mx-auto flex h-screen items-center justify-center">
+    <Dot className="touch-none font-sans h-screen w-screen max-w-full mx-auto flex h-screen items-center justify-center">
       <TypingText
         className="absolute top-5 left-10 text-xl font-medium"
         alwaysVisibleCount={0}

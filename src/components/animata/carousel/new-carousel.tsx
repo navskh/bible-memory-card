@@ -17,8 +17,8 @@ const inrange = (v: number, min: number, max: number) => {
   return v;
 };
 
-const SLIDER_WIDTH = 400;
-const SLIDER_HEIGHT = 400;
+const SLIDER_WIDTH = 40;
+const SLIDER_HEIGHT = 40;
 
 export default function CarouselInfiniteExample() {
   const slideList = [imageList.at(-1), ...imageList, imageList.at(0)];
