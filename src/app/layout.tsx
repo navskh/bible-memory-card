@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { ServiceWorkerUpdater } from '@/components/module/service-worker-updater';
 
 export const metadata: Metadata = {
   title: '성경 암송 앱',
@@ -67,7 +68,10 @@ export default function RootLayout({
         <link rel="mask-icon" href="/icons/icon-192x192.png" color="#4f46e5" />
         <link rel="shortcut icon" href="/icons/icon-192x192.png" />
       </head>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <ServiceWorkerUpdater />
+        {children}
+      </body>
     </html>
   );
 }

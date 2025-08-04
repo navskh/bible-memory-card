@@ -104,17 +104,6 @@ export default function CardSkew({
           setIsView(false);
         }
       }}
-      onTouchStart={e => {
-        e.preventDefault();
-        e.stopPropagation();
-        setTimeout(() => {
-          console.log('✅ 꾹 눌렀습니다!');
-          // 여기에 원하는 long press 동작 실행
-          if (isFocus) {
-            setIsView(false);
-          }
-        }, 500); // 500ms 이상 누르면 long press
-      }}
       {...registDragEvent({
         onDragChange: deltaX => {
           if (isFocus) {
