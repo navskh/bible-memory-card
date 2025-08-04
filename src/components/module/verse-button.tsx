@@ -17,7 +17,7 @@ const VerseButton = ({
 }) => {
   return (
     <StaggeredCard
-      className="absolute top-25 left-12 text-sm"
+      className="absolute top-30 left-12 text-sm"
       title="VERSE 선택"
       links={verseList.map(verse => ({
         index: verse.id,

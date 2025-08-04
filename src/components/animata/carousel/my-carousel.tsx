@@ -46,23 +46,23 @@ export default function MyCarousel({
   const visibleItems = visibleIndices.map(index => initialItems[index]);
 
   return (
-    <div>
+    <div className="overflow-x-hidden">
       <div
         onClick={handlePrev}
-        className="navigation-item-left absolute left-2 top-[35%] z-20 flex h-10 w-10 translate-y-[-50%] cursor-pointer items-center justify-center rounded-lg bg-gray-400 bg-opacity-40 bg-clip-padding backdrop-blur-sm backdrop-filter"
+        className="navigation-item-left absolute left-2 top-[45%] z-20 flex h-10 w-10 translate-y-[-50%] cursor-pointer items-center justify-center rounded-lg bg-gray-400 bg-opacity-40 bg-clip-padding backdrop-blur-sm backdrop-filter"
       >
         <ChevronLeft className="text-gray-800" />
       </div>
       <div
         onClick={handleNext}
-        className="navigation-item-right absolute right-2 top-[35%] z-20 flex h-10 w-10 translate-y-[-50%] cursor-pointer items-center justify-center rounded-lg bg-gray-300 bg-opacity-40 bg-clip-padding backdrop-blur-sm backdrop-filter"
+        className="navigation-item-right absolute right-2 top-[45%] z-20 flex h-10 w-10 translate-y-[-50%] cursor-pointer items-center justify-center rounded-lg bg-gray-300 bg-opacity-40 bg-clip-padding backdrop-blur-sm backdrop-filter"
       >
         <ChevronRight className="text-gray-800" />
       </div>
       {visibleItems.map((item, index) => (
         <div
           key={item?.id ?? 1}
-          className={'absolute left-[50%] top-[25%] z-10 animate-fadeIn'}
+          className={'absolute left-[50%] top-[30%] z-10 animate-fadeIn'}
           style={{
             transform:
               index === 1

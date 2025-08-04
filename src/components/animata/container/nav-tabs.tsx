@@ -19,7 +19,7 @@ export default function NavTabs({
   onSelect: (tab: string) => void;
 }) {
   return (
-    <div className="absolute top-12 left-12 flex flex-wrap items-center justify-center gap-4 rounded-md bg-neutral-950 p-1">
+    <div className="absolute top-15 left-12 flex flex-wrap items-center justify-center gap-4 rounded-md bg-neutral-950 p-1">
       {tabs.map(tab => (
         <Tab
           text={tab}
