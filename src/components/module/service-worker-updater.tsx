@@ -4,32 +4,22 @@ import { useEffect } from 'react';
 export function ServiceWorkerUpdater() {
   useEffect(() => {
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.ready.then(registration => {
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
-            if (!newWorker) return;
-
-            newWorker.addEventListener('statechange', () => {
-              if (
-                newWorker.state === 'installed' &&
-                navigator.serviceWorker.controller
-              ) {
-                const ok = window.confirm(
-                  '새 버전이 있습니다. 업데이트 하시겠습니까?',
-                );
-                if (ok) {
-                  newWorker.postMessage({ type: 'SKIP_WAITING' });
-                  newWorker.addEventListener('statechange', () => {
-                    if (newWorker.state === 'activated') {
-                      window.location.reload();
-                    }
-                  });
-                }
-              }
-            });
+      console.log('ServiceWorkerUpdater', navigator.serviceWorker);
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        console.log('registrations', registrations);
+        for (const registration of registrations) {
+          registration.unregister().then(isUnregistered => {
+            console.log('isUnregistered', isUnregistered);
+            if (isUnregistered) {
+              console.log('기존 service-worker 제거 완료');
+              // 강제로 새로 등록
+              navigator.serviceWorker
+                .register('/sw.js')
+                .then(() => console.log('새 service-worker 등록됨'))
+                .catch(console.error);
+            }
           });
-        });
+        }
       });
     }
   }, []);

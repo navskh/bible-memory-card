@@ -7,6 +7,7 @@
     "dev": "cross-env NEXT_PRIVATE_TURBOPACK=0 next dev",
     "build": "next build",
     "start": "next start",
+    "sw": "next build && next start",
     "lint": "next lint",
     "generate-icons": "node scripts/generate-icons.js"
   },
