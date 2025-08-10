@@ -168,21 +168,22 @@ export default function CardSkew({
               `${heading1}-${heading2}-${heading3}`,
               e.target.checked.toString(),
             );
-            const todaysCount = localStorage.getItem('todays-count');
+            const today = new Date().toISOString().split('T')[0];
+            const todaysCount = localStorage.getItem(`${today}-count`);
             if (todaysCount) {
               if (e.target.checked) {
                 localStorage.setItem(
-                  'todays-count',
+                  `${today}-count`,
                   (Number(todaysCount) + 1).toString(),
                 );
               } else {
                 localStorage.setItem(
-                  'todays-count',
+                  `${today}-count`,
                   (Number(todaysCount) - 1).toString(),
                 );
               }
             } else {
-              localStorage.setItem('todays-count', '1');
+              localStorage.setItem(`${today}-count`, '1');
             }
             setIsChecked(e.target.checked);
           }}

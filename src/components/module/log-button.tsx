@@ -1,7 +1,9 @@
+'use client';
 import { useState } from 'react';
 
 const LogButton = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const today = new Date().toISOString().split('T')[0];
 
   return (
     <>
@@ -15,9 +17,15 @@ const LogButton = () => {
       </button>
       {isOpen && (
         <div className="absolute bottom-20 left-5 text-xl font-medium z-10 px-4 py-2 transition-all duration-300 ease-out will-change-transform">
-          <p>
-            오늘의 암송 횟수는 {localStorage.getItem('todays-count')}회 입니다.
-          </p>
+          {localStorage.getItem(`${today}-count`) &&
+          localStorage.getItem(`${today}-count`) !== '0' ? (
+            <p>
+              오늘의 암송 횟수는 {localStorage.getItem(`${today}-count`)}회
+              입니다.
+            </p>
+          ) : (
+            <p>오늘의 암송 횟수가 없습니다.</p>
+          )}
         </div>
       )}
     </>
