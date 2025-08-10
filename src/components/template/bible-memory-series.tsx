@@ -92,11 +92,7 @@ export default function BibleMemorySeries({ day }: { day: string }) {
       )}
 
       {cards.length > 0 && (
-        <MyCarousel
-          items={cards}
-          injectedIndex={injectedIndex}
-          setInjectedIndex={setInjectedIndex}
-        />
+        <MyCarousel items={cards} injectedIndex={injectedIndex} />
       )}
 
       <InitButton />
