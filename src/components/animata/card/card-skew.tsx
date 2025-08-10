@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useMousePosition } from '@/hooks/use-mouse-position';
 import { cn } from '@/lib/utils';
@@ -69,6 +69,7 @@ export default function CardSkew({
   const containerRef = useRef<HTMLDivElement>(null);
   const resetRef = useRef<NodeJS.Timeout | null>(null);
   const [transX, setTransX] = useState(0);
+  const [isChecked, setIsChecked] = useState(false);
 
   const update = useCallback(({ x, y }: { x: number; y: number }) => {
     if (!containerRef.current) {
@@ -89,6 +90,15 @@ export default function CardSkew({
   }, []);
 
   useMousePosition(containerRef, update);
+
+  useEffect(() => {
+    const storageIsChecked = localStorage.getItem(
+      `${heading1}-${heading2}-${heading3}`,
+    );
+    if (storageIsChecked) {
+      setIsChecked(storageIsChecked === 'true');
+    }
+  }, [heading1, heading2, heading3]);
 
   return (
     <div
@@ -113,7 +123,7 @@ export default function CardSkew({
       })}
       ref={containerRef}
       className={cn(
-        'flex max-w-100 min-w-70 transform-gpu flex-col gap-1 rounded-3xl border border-border bg-zinc-700 p-10 text-zinc-200 shadow-lg transition-transform ease-linear will-change-transform',
+        'flex max-w-100 min-w-80 transform-gpu flex-col gap-1 rounded-3xl border border-border bg-zinc-700 p-10 text-zinc-200 shadow-lg transition-transform ease-linear will-change-transform',
         className,
       )}
       style={{
@@ -144,7 +154,43 @@ export default function CardSkew({
         containerRef.current.style.setProperty('--y', '0deg');
       }}
     >
-      <p className="font-mono text-l tracking-tight select-none">{heading1}</p>
+      <div className="flex items-center justify-between">
+        <p className="font-mono text-l tracking-tight select-none">
+          {heading1}
+        </p>
+        <input
+          type="checkbox"
+          onClick={e => {
+            e.stopPropagation();
+          }}
+          onChange={e => {
+            localStorage.setItem(
+              `${heading1}-${heading2}-${heading3}`,
+              e.target.checked.toString(),
+            );
+            const todaysCount = localStorage.getItem('todays-count');
+            if (todaysCount) {
+              if (e.target.checked) {
+                localStorage.setItem(
+                  'todays-count',
+                  (Number(todaysCount) + 1).toString(),
+                );
+              } else {
+                localStorage.setItem(
+                  'todays-count',
+                  (Number(todaysCount) - 1).toString(),
+                );
+              }
+            } else {
+              localStorage.setItem('todays-count', '1');
+            }
+            setIsChecked(e.target.checked);
+          }}
+          checked={isChecked}
+          className="size-4"
+        />
+      </div>
+
       <p className="font-mono text-l tracking-tight select-none">{heading2}</p>
       <p className="font-mono text-l tracking-tight select-none">{heading3}</p>
 

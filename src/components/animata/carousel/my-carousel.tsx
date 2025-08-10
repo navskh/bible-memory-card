@@ -17,6 +17,7 @@ interface ICarouselItem {
 interface IMyCarouselProps {
   items: ICarouselItem[];
   injectedIndex?: number;
+  setInjectedIndex?: (index: number) => void;
 }
 
 const inrange = (v: number, min: number, max: number) => {
@@ -28,20 +29,32 @@ const inrange = (v: number, min: number, max: number) => {
 export default function MyCarousel({
   items: initialItems,
   injectedIndex,
+  setInjectedIndex,
 }: IMyCarouselProps) {
-  const [currentIndex, setCurrentIndex] = useState(injectedIndex ?? 1);
+  const [currentIndex, setCurrentIndex] = useState(injectedIndex ?? 0);
 
   useEffect(() => {
-    setCurrentIndex(injectedIndex ?? 1);
+    setCurrentIndex(injectedIndex ?? 0);
   }, [injectedIndex]);
 
   const handleNext = () => {
     setCurrentIndex(prevIndex => (prevIndex + 1) % initialItems.length);
+    localStorage.setItem(
+      'injectedIndex',
+      ((currentIndex + 1) % initialItems.length).toString(),
+    );
   };
 
   const handlePrev = () => {
     setCurrentIndex(
       prevIndex => (prevIndex - 1 + initialItems.length) % initialItems.length,
+    );
+    localStorage.setItem(
+      'injectedIndex',
+      (
+        (currentIndex - 1 + initialItems.length) %
+        initialItems.length
+      ).toString(),
     );
   };
 

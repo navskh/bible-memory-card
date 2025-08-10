@@ -13,18 +13,24 @@ import {
 } from '@/lib/load-data';
 import VerseButton from '../module/verse-button';
 import NavTabs from '../animata/container/nav-tabs';
+import InitButton from '../module/init-button';
+import LogButton from '../module/log-button';
 
 export default function BibleMemorySeries({ day }: { day: string }) {
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState('');
   const [cards, setCards] = useState<any[]>([]);
-  const [injectedIndex, setInjectedIndex] = useState(1);
+  const [injectedIndex, setInjectedIndex] = useState(0);
   const [mode, setMode] = useState<'60구절' | 'DEP 242'>('60구절');
 
   useEffect(() => {
-    const mode = localStorage.getItem('mode');
-    if (mode) {
-      setMode(mode as '60구절' | 'DEP 242');
+    const storageInjectedIndex = localStorage.getItem('injectedIndex');
+    if (storageInjectedIndex) {
+      setInjectedIndex(parseInt(storageInjectedIndex) || 0);
+    }
+    const storageMode = localStorage.getItem('mode') as '60구절' | 'DEP 242';
+    if (storageMode) {
+      setMode(storageMode);
     }
   }, []);
 
@@ -86,8 +92,15 @@ export default function BibleMemorySeries({ day }: { day: string }) {
       )}
 
       {cards.length > 0 && (
-        <MyCarousel items={cards} injectedIndex={injectedIndex} />
+        <MyCarousel
+          items={cards}
+          injectedIndex={injectedIndex}
+          setInjectedIndex={setInjectedIndex}
+        />
       )}
+
+      <InitButton />
+      <LogButton />
     </Dot>
   );
 }
