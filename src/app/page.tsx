@@ -1,5 +1,5 @@
-import BibleMemorySeriesPage from './dep/[day]/page';
+import BibleMemorySeries from '@/components/template/bible-memory-series';
 
 export default function Home() {
-  return <BibleMemorySeriesPage />;
+  return <BibleMemorySeries day="1" />;
 }
