@@ -17,17 +17,13 @@ interface ICarouselItem {
 interface IMyCarouselProps {
   items: ICarouselItem[];
   injectedIndex?: number;
+  mode: '60v' | 'dep';
 }
-
-const inrange = (v: number, min: number, max: number) => {
-  if (v < min) return min;
-  if (v > max) return max;
-  return v;
-};
 
 export default function MyCarousel({
   items: initialItems,
   injectedIndex,
+  mode,
 }: IMyCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(injectedIndex ?? 0);
 
@@ -37,22 +33,11 @@ export default function MyCarousel({
 
   const handleNext = () => {
     setCurrentIndex(prevIndex => (prevIndex + 1) % initialItems.length);
-    localStorage.setItem(
-      'injectedIndex',
-      ((currentIndex + 1) % initialItems.length).toString(),
-    );
   };
 
   const handlePrev = () => {
     setCurrentIndex(
       prevIndex => (prevIndex - 1 + initialItems.length) % initialItems.length,
-    );
-    localStorage.setItem(
-      'injectedIndex',
-      (
-        (currentIndex - 1 + initialItems.length) %
-        initialItems.length
-      ).toString(),
     );
   };
 
@@ -68,42 +53,42 @@ export default function MyCarousel({
   const calculateTransform = (index: number) => {
     if (isMobile) {
       if (index === 1) {
-        return 'translateX(-50%) scale(1.1)';
+        return 'translate(-50%, -50%) scale(1)';
       }
       if (index === 0) {
-        return 'translateX(-75%) rotate(-10deg)';
+        return 'translate(-130%, -50%) rotate(-12deg) scale(0.8)';
       }
-      return 'translateX(-25%) rotate(10deg)';
+      return 'translate(30%, -50%) rotate(12deg) scale(0.8)';
     } else {
       if (index === 1) {
-        return 'translateX(-50%) scale(1.1)';
+        return 'translate(-50%, -50%) scale(1.1)';
       }
       if (index === 0) {
-        return 'translateX(-150%) rotate(-20deg)';
+        return 'translate(-115%, -50%) rotate(-15deg) scale(0.85)';
       }
-      return 'translateX(50%) rotate(20deg)';
+      return 'translate(15%, -50%) rotate(15deg) scale(0.85)';
     }
   };
 
   return (
-    <div>
-      <div className="w-full h-[300px] bg-red-100 z-100">
+    <div className="w-full overflow-x-hidden flex items-center justify-center">
+      <div className="relative w-full min-h-[60vh] flex items-center justify-center">
         <div
           onClick={handlePrev}
-          className="navigation-item-left absolute left-2 top-[45%] z-20 flex h-10 w-10 translate-y-[-50%] cursor-pointer items-center justify-center rounded-lg bg-gray-400 bg-opacity-40 bg-clip-padding backdrop-blur-sm backdrop-filter"
+          className="navigation-item-left absolute left-2 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-lg bg-gray-400/40 bg-clip-padding backdrop-blur-sm backdrop-filter"
         >
           <ChevronLeft className="text-gray-800" />
         </div>
         <div
           onClick={handleNext}
-          className="navigation-item-right absolute right-2 top-[45%] z-20 flex h-10 w-10 translate-y-[-50%] cursor-pointer items-center justify-center rounded-lg bg-gray-300 bg-opacity-40 bg-clip-padding backdrop-blur-sm backdrop-filter"
+          className="navigation-item-right absolute right-2 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-lg bg-gray-300/40 bg-clip-padding backdrop-blur-sm backdrop-filter"
         >
           <ChevronRight className="text-gray-800" />
         </div>
         {visibleItems.map((item, index) => (
           <div
             key={item?.id ?? 1}
-            className={'absolute left-[50%] top-[30%] z-10 animate-fadeIn'}
+            className={'absolute left-1/2 top-1/2 z-10 animate-fadeIn touch-pan-y select-none'}
             style={{
               transform: calculateTransform(index),
               transition: 'transform 0.5s ease, filter 0.5s ease',
@@ -112,12 +97,11 @@ export default function MyCarousel({
             }}
             {...registDragEvent({
               onDragEnd: deltaX => {
-                const maxIndex = initialItems.length - 1;
-
-                if (deltaX < -10)
-                  setCurrentIndex(inrange(currentIndex + 1, 0, maxIndex));
-                if (deltaX > 10)
-                  setCurrentIndex(inrange(currentIndex - 1, 0, maxIndex));
+                const len = initialItems.length;
+                if (deltaX < -50)
+                  setCurrentIndex(prev => (prev + 1) % len);
+                if (deltaX > 50)
+                  setCurrentIndex(prev => (prev - 1 + len) % len);
               },
             })}
           >
@@ -128,6 +112,7 @@ export default function MyCarousel({
               verse={item?.verse}
               text={item?.text}
               isFocus={index === 1}
+              mode={mode}
             />
           </div>
         ))}

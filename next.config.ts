@@ -1,20 +1,15 @@
-// next.config.js
 import type { NextConfig } from 'next';
-import withPWA from 'next-pwa';
+import withPWAInit from '@ducanh2912/next-pwa';
 
-const nextConfig: NextConfig = {
-  webpack: config => {
-    config.module.rules.push({
-      test: /\.json$/,
-      type: 'json',
-    });
-    return config;
-  },
-};
+const nextConfig: NextConfig = {};
 
-export default withPWA({
+const withPWA = withPWAInit({
   dest: 'public',
   register: true,
-  skipWaiting: true,
   disable: process.env.NODE_ENV === 'development',
-})(nextConfig as any);
+  workboxOptions: {
+    skipWaiting: true,
+  },
+});
+
+export default withPWA(nextConfig);

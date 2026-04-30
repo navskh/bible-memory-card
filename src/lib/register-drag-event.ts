@@ -1,7 +1,3 @@
-const isTouchScreen =
-  typeof window !== 'undefined' &&
-  window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-
 export default function registDragEvent({
   onDragChange,
   onDragEnd,
@@ -11,64 +7,30 @@ export default function registDragEvent({
   onDragEnd?: (deltaX: number, deltaY: number) => void;
   stopPropagation?: boolean;
 }) {
-  if (isTouchScreen) {
-    return {
-      onTouchStart: (touchEvent: React.TouchEvent<HTMLDivElement>) => {
-        if (stopPropagation) touchEvent.stopPropagation();
-
-        const touchMoveHandler = (moveEvent: TouchEvent) => {
-          if (!moveEvent.touches[0]) return;
-          if (!touchEvent.touches[0]) return;
-          if (moveEvent.cancelable) moveEvent.preventDefault();
-
-          const deltaX =
-            moveEvent.touches[0].pageX - touchEvent.touches[0].pageX;
-          const deltaY =
-            moveEvent.touches[0].pageY - touchEvent.touches[0].pageY;
-          onDragChange?.(deltaX, deltaY);
-        };
-
-        const touchEndHandler = (moveEvent: TouchEvent) => {
-          if (!moveEvent.changedTouches[0]) return;
-          if (!touchEvent.changedTouches[0]) return;
-
-          const deltaX =
-            moveEvent.changedTouches[0].pageX -
-            touchEvent.changedTouches[0].pageX;
-          const deltaY =
-            moveEvent.changedTouches[0].pageY -
-            touchEvent.changedTouches[0].pageY;
-          onDragEnd?.(deltaX, deltaY);
-          document.removeEventListener('touchmove', touchMoveHandler);
-        };
-
-        document.addEventListener('touchmove', touchMoveHandler, {
-          passive: false,
-        });
-        document.addEventListener('touchend', touchEndHandler, { once: true });
-      },
-    };
-  }
-
   return {
-    onMouseDown: (clickEvent: React.MouseEvent<Element, MouseEvent>) => {
-      if (stopPropagation) clickEvent.stopPropagation();
+    onPointerDown: (downEvent: React.PointerEvent<HTMLDivElement>) => {
+      if (stopPropagation) downEvent.stopPropagation();
 
-      const mouseMoveHandler = (moveEvent: MouseEvent) => {
-        const deltaX = moveEvent.pageX - clickEvent.pageX;
-        const deltaY = moveEvent.pageY - clickEvent.pageY;
-        onDragChange?.(deltaX, deltaY);
+      const startX = downEvent.pageX;
+      const startY = downEvent.pageY;
+      const pointerId = downEvent.pointerId;
+
+      const moveHandler = (moveEvent: PointerEvent) => {
+        if (moveEvent.pointerId !== pointerId) return;
+        if (moveEvent.cancelable) moveEvent.preventDefault();
+        onDragChange?.(moveEvent.pageX - startX, moveEvent.pageY - startY);
       };
 
-      const mouseUpHandler = (moveEvent: MouseEvent) => {
-        const deltaX = moveEvent.pageX - clickEvent.pageX;
-        const deltaY = moveEvent.pageY - clickEvent.pageY;
-        onDragEnd?.(deltaX, deltaY);
-        document.removeEventListener('mousemove', mouseMoveHandler);
+      const upHandler = (upEvent: PointerEvent) => {
+        if (upEvent.pointerId !== pointerId) return;
+        onDragEnd?.(upEvent.pageX - startX, upEvent.pageY - startY);
+        document.removeEventListener('pointermove', moveHandler);
+        document.removeEventListener('pointercancel', upHandler);
       };
 
-      document.addEventListener('mousemove', mouseMoveHandler);
-      document.addEventListener('mouseup', mouseUpHandler, { once: true });
+      document.addEventListener('pointermove', moveHandler);
+      document.addEventListener('pointerup', upHandler, { once: true });
+      document.addEventListener('pointercancel', upHandler, { once: true });
     },
   };
 }

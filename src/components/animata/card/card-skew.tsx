@@ -56,6 +56,7 @@ export default function CardSkew({
   verse,
   text,
   isFocus,
+  mode,
 }: {
   className?: string;
   heading1?: string;
@@ -64,12 +65,16 @@ export default function CardSkew({
   verse?: string;
   text?: string;
   isFocus?: boolean;
+  mode: '60v' | 'dep';
 }) {
   const [isView, setIsView] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const resetRef = useRef<NodeJS.Timeout | null>(null);
   const [transX, setTransX] = useState(0);
   const [isChecked, setIsChecked] = useState(false);
+
+  const cardKey = `${heading1}-${heading2}-${heading3}`;
+  const checkKey = `${mode}:${cardKey}`;
 
   const update = useCallback(({ x, y }: { x: number; y: number }) => {
     if (!containerRef.current) {
@@ -92,13 +97,16 @@ export default function CardSkew({
   useMousePosition(containerRef, update);
 
   useEffect(() => {
-    const storageIsChecked = localStorage.getItem(
-      `${heading1}-${heading2}-${heading3}`,
-    );
-    if (storageIsChecked) {
-      setIsChecked(storageIsChecked === 'true');
+    let stored = localStorage.getItem(checkKey);
+    if (stored === null) {
+      const legacy = localStorage.getItem(cardKey);
+      if (legacy !== null) {
+        localStorage.setItem(checkKey, legacy);
+        stored = legacy;
+      }
     }
-  }, [heading1, heading2, heading3]);
+    setIsChecked(stored === 'true');
+  }, [checkKey, cardKey]);
 
   return (
     <div
@@ -123,7 +131,7 @@ export default function CardSkew({
       })}
       ref={containerRef}
       className={cn(
-        'flex max-w-100 min-w-80 transform-gpu flex-col gap-1 rounded-3xl border border-border bg-zinc-700 p-10 text-zinc-200 shadow-lg transition-transform ease-linear will-change-transform',
+        'flex w-[78vw] max-w-100 min-w-72 sm:min-w-80 transform-gpu flex-col gap-2 rounded-3xl border border-zinc-200 bg-white p-6 sm:p-10 text-zinc-900 shadow-2xl shadow-zinc-900/10 transition-transform ease-linear will-change-transform',
         className,
       )}
       style={{
@@ -154,8 +162,8 @@ export default function CardSkew({
         containerRef.current.style.setProperty('--y', '0deg');
       }}
     >
-      <div className="flex items-center justify-between">
-        <p className="font-mono text-l tracking-tight select-none">
+      <div className="flex items-start justify-between gap-3">
+        <p className="font-mono text-base font-semibold tracking-tight text-zinc-900 select-none">
           {heading1}
         </p>
         <input
@@ -164,44 +172,54 @@ export default function CardSkew({
             e.stopPropagation();
           }}
           onChange={e => {
-            localStorage.setItem(
-              `${heading1}-${heading2}-${heading3}`,
-              e.target.checked.toString(),
-            );
+            const next = e.target.checked;
+            localStorage.setItem(checkKey, String(next));
+
             const today = new Date().toISOString().split('T')[0];
-            const todaysCount = localStorage.getItem(`${today}-count`);
-            if (todaysCount) {
-              if (e.target.checked) {
-                localStorage.setItem(
-                  `${today}-count`,
-                  (Number(todaysCount) + 1).toString(),
-                );
-              } else {
-                localStorage.setItem(
-                  `${today}-count`,
-                  (Number(todaysCount) - 1).toString(),
-                );
-              }
-            } else {
-              localStorage.setItem(`${today}-count`, '1');
+            const countedKey = `${mode}:counted:${today}:${cardKey}`;
+            const currentCount = Number(
+              localStorage.getItem(`${today}-count`) ?? 0,
+            );
+
+            if (next && !localStorage.getItem(countedKey)) {
+              localStorage.setItem(
+                `${today}-count`,
+                String(currentCount + 1),
+              );
+              localStorage.setItem(countedKey, '1');
+            } else if (!next && localStorage.getItem(countedKey)) {
+              localStorage.setItem(
+                `${today}-count`,
+                String(Math.max(0, currentCount - 1)),
+              );
+              localStorage.removeItem(countedKey);
             }
-            setIsChecked(e.target.checked);
+
+            setIsChecked(next);
           }}
           checked={isChecked}
-          className="size-4"
+          className="size-4 accent-zinc-900"
         />
       </div>
 
-      <p className="font-mono text-l tracking-tight select-none">{heading2}</p>
-      <p className="font-mono text-l tracking-tight select-none">{heading3}</p>
+      <p className="font-mono text-base text-zinc-700 tracking-tight select-none">
+        {heading2}
+      </p>
+      <p className="font-mono text-base text-zinc-700 tracking-tight select-none">
+        {heading3}
+      </p>
 
-      <span className="text-m font-bold text-zinc-400 select-none">
+      <span className="mt-2 inline-block text-sm font-bold uppercase tracking-widest text-amber-600 select-none">
         {verse}
       </span>
 
-      <p className="text-m font-medium text-zinc-400 break-keep whitespace-pre-line select-none">
-        {isView ? text : <EyeOff className="w-14 h-14 md:w-20 md:h-25" />}
-      </p>
+      <div className="mt-1 text-base font-medium text-zinc-700 break-keep whitespace-pre-line select-none">
+        {isView ? (
+          text
+        ) : (
+          <EyeOff className="w-14 h-14 md:w-20 md:h-25 text-zinc-300" />
+        )}
+      </div>
     </div>
   );
 }

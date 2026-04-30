@@ -1,27 +1,27 @@
 'use client';
 import { useEffect } from 'react';
 
+const CLEANUP_FLAG = 'sw-cleanup-v1-done';
+
 export function ServiceWorkerUpdater() {
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      console.log('ServiceWorkerUpdater', navigator.serviceWorker);
-      navigator.serviceWorker.getRegistrations().then(registrations => {
-        console.log('registrations', registrations);
-        for (const registration of registrations) {
-          registration.unregister().then(isUnregistered => {
-            console.log('isUnregistered', isUnregistered);
-            if (isUnregistered) {
-              console.log('기존 service-worker 제거 완료');
-              // 강제로 새로 등록
-              navigator.serviceWorker
-                .register('/sw.js')
-                .then(() => console.log('새 service-worker 등록됨'))
-                .catch(console.error);
-            }
-          });
-        }
-      });
-    }
+    if (!('serviceWorker' in navigator)) return;
+    if (localStorage.getItem(CLEANUP_FLAG)) return;
+
+    navigator.serviceWorker.getRegistrations().then(async registrations => {
+      if (registrations.length === 0) {
+        localStorage.setItem(CLEANUP_FLAG, '1');
+        return;
+      }
+
+      await Promise.all(registrations.map(r => r.unregister()));
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+      localStorage.setItem(CLEANUP_FLAG, '1');
+      window.location.reload();
+    });
   }, []);
 
   return null;

@@ -13,6 +13,8 @@ interface StaggeredCardProps extends React.ComponentProps<'div'> {
   delay?: number;
   openingDelay?: number;
   title?: string;
+  direction?: 'up' | 'down';
+  align?: 'left' | 'right';
 }
 
 export default function StaggeredCard({
@@ -21,6 +23,8 @@ export default function StaggeredCard({
   delay = 0.06,
   openingDelay = 0.1,
   title,
+  direction = 'down',
+  align = 'left',
   ...props
 }: StaggeredCardProps) {
   const router = useRouter();
@@ -58,7 +62,7 @@ export default function StaggeredCard({
   };
 
   return (
-    <div className={cn('relative h-fit w-fit', className)} {...props}>
+    <div className={cn('relative z-50 h-fit w-fit', className)} {...props}>
       <button
         className="cursor-pointer rounded-md bg-neutral-700 px-3 py-1.5 text-lg font-medium text-neutral-100 active:bg-neutral-600"
         onClick={toggleOpen}
@@ -81,7 +85,17 @@ export default function StaggeredCard({
               ease: easeOut as any,
               delay: openingDelay,
             }}
-            className="absolute left-0 top-full mt-2 w-max origin-top-right rounded-md bg-neutral-900 z-50"
+            className={cn(
+              'absolute w-max rounded-md bg-neutral-900 z-50 max-h-[60vh] overflow-y-auto',
+              align === 'right' ? 'right-0' : 'left-0',
+              direction === 'up'
+                ? align === 'right'
+                  ? 'bottom-full mb-2 origin-bottom-right'
+                  : 'bottom-full mb-2 origin-bottom-left'
+                : align === 'right'
+                  ? 'top-full mt-2 origin-top-right'
+                  : 'top-full mt-2 origin-top-left',
+            )}
           >
             <div
               ref={containerRef}

@@ -24,15 +24,15 @@ export default function BibleMemorySeries({ day }: { day: string }) {
   const [mode, setMode] = useState<'60구절' | 'DEP 242'>('60구절');
 
   useEffect(() => {
-    const storageInjectedIndex = localStorage.getItem('injectedIndex');
-    if (storageInjectedIndex) {
-      setInjectedIndex(parseInt(storageInjectedIndex) || 0);
-    }
     const storageMode = localStorage.getItem('mode') as '60구절' | 'DEP 242';
     if (storageMode) {
       setMode(storageMode);
     }
   }, []);
+
+  useEffect(() => {
+    setInjectedIndex(0);
+  }, [mode, day]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -92,7 +92,12 @@ export default function BibleMemorySeries({ day }: { day: string }) {
       )}
 
       {cards.length > 0 && (
-        <MyCarousel items={cards} injectedIndex={injectedIndex} />
+        <MyCarousel
+          key={`${mode}-${day}`}
+          items={cards}
+          injectedIndex={injectedIndex}
+          mode={mode === '60구절' ? '60v' : 'dep'}
+        />
       )}
 
       <InitButton />
