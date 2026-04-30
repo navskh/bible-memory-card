@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useMousePosition } from '@/hooks/use-mouse-position';
 import { cn } from '@/lib/utils';
-import { EyeOff } from 'lucide-react';
+import { Check, EyeOff } from 'lucide-react';
 import registDragEvent from '@/lib/register-drag-event';
 
 function calculateCardRotation({
@@ -166,13 +166,13 @@ export default function CardSkew({
         <p className="font-mono text-base font-semibold tracking-tight text-zinc-900 select-none">
           {heading1}
         </p>
-        <input
-          type="checkbox"
+        <button
+          type="button"
+          aria-pressed={isChecked}
+          aria-label={isChecked ? '암송 완료 해제' : '암송 완료'}
           onClick={e => {
             e.stopPropagation();
-          }}
-          onChange={e => {
-            const next = e.target.checked;
+            const next = !isChecked;
             localStorage.setItem(checkKey, String(next));
 
             const today = new Date().toISOString().split('T')[0];
@@ -197,9 +197,21 @@ export default function CardSkew({
 
             setIsChecked(next);
           }}
-          checked={isChecked}
-          className="size-4 accent-zinc-900"
-        />
+          className={cn(
+            'flex size-8 items-center justify-center rounded-full border transition-colors',
+            isChecked
+              ? 'border-emerald-500 bg-emerald-500 text-white'
+              : 'border-zinc-300 bg-white text-zinc-400 hover:border-zinc-400',
+          )}
+        >
+          <Check
+            className={cn(
+              'size-4 transition-opacity',
+              isChecked ? 'opacity-100' : 'opacity-60',
+            )}
+            strokeWidth={2.5}
+          />
+        </button>
       </div>
 
       <p className="font-mono text-base text-zinc-700 tracking-tight select-none">
