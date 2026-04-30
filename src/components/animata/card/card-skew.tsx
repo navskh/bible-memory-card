@@ -131,7 +131,7 @@ export default function CardSkew({
       })}
       ref={containerRef}
       className={cn(
-        'flex w-[78vw] max-w-100 min-w-72 sm:min-w-80 transform-gpu flex-col gap-2 rounded-3xl border border-zinc-200 bg-white p-6 sm:p-10 text-zinc-900 shadow-2xl shadow-zinc-900/10 transition-transform ease-linear will-change-transform',
+        'flex w-[78vw] max-w-100 min-w-72 sm:min-w-80 [@media(max-height:500px)]:w-[55vw] [@media(max-height:500px)]:min-w-0 [@media(max-height:500px)]:max-h-[88vh] [@media(max-height:500px)]:overflow-y-auto transform-gpu flex-col gap-2 [@media(max-height:500px)]:gap-1 rounded-3xl border border-zinc-200 bg-white p-6 sm:p-10 [@media(max-height:500px)]:p-3 text-zinc-900 shadow-2xl shadow-zinc-900/10 transition-transform ease-linear will-change-transform',
         className,
       )}
       style={{
@@ -225,11 +225,11 @@ export default function CardSkew({
         {verse}
       </span>
 
-      <div className="mt-1 text-base font-medium text-zinc-700 break-keep whitespace-pre-line select-none">
+      <div className="mt-1 text-base [@media(max-height:500px)]:text-sm font-medium text-zinc-700 break-keep whitespace-pre-line select-none">
         {isView ? (
           text
         ) : (
-          <EyeOff className="w-14 h-14 md:w-20 md:h-25 text-zinc-300" />
+          <EyeOff className="w-14 h-14 md:w-20 md:h-25 [@media(max-height:500px)]:w-8 [@media(max-height:500px)]:h-8 text-zinc-300" />
         )}
       </div>
     </div>

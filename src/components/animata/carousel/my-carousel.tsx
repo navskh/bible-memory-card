@@ -50,7 +50,19 @@ export default function MyCarousel({
   const visibleItems = visibleIndices.map(index => initialItems[index]);
 
   const isMobile = useMediaQuery('(max-width: 768px)');
+  const isLandscape = useMediaQuery(
+    '(max-width: 900px) and (orientation: landscape)',
+  );
   const calculateTransform = (index: number) => {
+    if (isLandscape) {
+      if (index === 1) {
+        return 'translate(-50%, -50%) scale(1)';
+      }
+      if (index === 0) {
+        return 'translate(-105%, -50%) rotate(-10deg) scale(0.8)';
+      }
+      return 'translate(5%, -50%) rotate(10deg) scale(0.8)';
+    }
     if (isMobile) {
       if (index === 1) {
         return 'translate(-50%, -50%) scale(1)';
@@ -72,7 +84,7 @@ export default function MyCarousel({
 
   return (
     <div className="w-full overflow-x-hidden flex items-center justify-center">
-      <div className="relative w-full min-h-[60vh] flex items-center justify-center">
+      <div className="relative w-full min-h-[60vh] [@media(max-height:500px)]:min-h-[90vh] flex items-center justify-center">
         <div
           onClick={handlePrev}
           className="navigation-item-left absolute left-2 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-lg bg-gray-400/40 bg-clip-padding backdrop-blur-sm backdrop-filter"
