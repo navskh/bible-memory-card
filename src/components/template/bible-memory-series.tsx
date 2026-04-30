@@ -97,6 +97,7 @@ export default function BibleMemorySeries({ day }: { day: string }) {
           items={cards}
           injectedIndex={injectedIndex}
           mode={mode === '60구절' ? '60v' : 'dep'}
+          day={day}
         />
       )}
 

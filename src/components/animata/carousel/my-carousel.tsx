@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import CardSkew from '../card/card-skew';
+import CompletionCard from '../card/completion-card';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import registDragEvent from '@/lib/register-drag-event';
 
@@ -18,12 +19,16 @@ interface IMyCarouselProps {
   items: ICarouselItem[];
   injectedIndex?: number;
   mode: '60v' | 'dep';
+  day: string;
 }
+
+const COMPLETION_ID = '__completion__';
 
 export default function MyCarousel({
   items: initialItems,
   injectedIndex,
   mode,
+  day,
 }: IMyCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(injectedIndex ?? 0);
 
@@ -31,23 +36,27 @@ export default function MyCarousel({
     setCurrentIndex(injectedIndex ?? 0);
   }, [injectedIndex]);
 
+  const itemsWithCompletion: ICarouselItem[] = [
+    ...initialItems,
+    { id: COMPLETION_ID },
+  ];
+  const totalSlots = itemsWithCompletion.length;
+
   const handleNext = () => {
-    setCurrentIndex(prevIndex => (prevIndex + 1) % initialItems.length);
+    setCurrentIndex(prevIndex => (prevIndex + 1) % totalSlots);
   };
 
   const handlePrev = () => {
-    setCurrentIndex(
-      prevIndex => (prevIndex - 1 + initialItems.length) % initialItems.length,
-    );
+    setCurrentIndex(prevIndex => (prevIndex - 1 + totalSlots) % totalSlots);
   };
 
   const visibleIndices = [
-    (currentIndex - 1 + initialItems.length) % initialItems.length,
+    (currentIndex - 1 + totalSlots) % totalSlots,
     currentIndex,
-    (currentIndex + 1) % initialItems.length,
+    (currentIndex + 1) % totalSlots,
   ];
 
-  const visibleItems = visibleIndices.map(index => initialItems[index]);
+  const visibleItems = visibleIndices.map(index => itemsWithCompletion[index]);
 
   const isMobile = useMediaQuery('(max-width: 768px)');
   const isLandscape = useMediaQuery(
@@ -109,23 +118,32 @@ export default function MyCarousel({
             }}
             {...registDragEvent({
               onDragEnd: deltaX => {
-                const len = initialItems.length;
                 if (deltaX < -50)
-                  setCurrentIndex(prev => (prev + 1) % len);
+                  setCurrentIndex(prev => (prev + 1) % totalSlots);
                 if (deltaX > 50)
-                  setCurrentIndex(prev => (prev - 1 + len) % len);
+                  setCurrentIndex(prev => (prev - 1 + totalSlots) % totalSlots);
               },
             })}
           >
-            <CardSkew
-              heading1={item?.heading1}
-              heading2={item?.heading2}
-              heading3={item?.heading3}
-              verse={item?.verse}
-              text={item?.text}
-              isFocus={index === 1}
-              mode={mode}
-            />
+            {item?.id === COMPLETION_ID ? (
+              <CompletionCard
+                mode={mode}
+                day={day}
+                cards={initialItems}
+                isFocus={index === 1}
+                onResetToStart={() => setCurrentIndex(0)}
+              />
+            ) : (
+              <CardSkew
+                heading1={item?.heading1}
+                heading2={item?.heading2}
+                heading3={item?.heading3}
+                verse={item?.verse}
+                text={item?.text}
+                isFocus={index === 1}
+                mode={mode}
+              />
+            )}
           </div>
         ))}
       </div>
