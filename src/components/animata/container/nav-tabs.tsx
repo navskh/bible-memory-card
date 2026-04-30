@@ -19,7 +19,7 @@ export default function NavTabs({
   onSelect: (tab: string) => void;
 }) {
   return (
-    <div className="absolute top-15 left-12 flex flex-wrap items-center justify-center gap-4 rounded-md bg-neutral-950 p-1">
+    <div className="absolute top-14 left-5 z-30 flex flex-wrap items-center gap-1 rounded-full border border-zinc-200 bg-white/90 p-1 shadow-md shadow-zinc-900/5 backdrop-blur sm:top-15 sm:left-12">
       {tabs.map(tab => (
         <Tab
           text={tab}
@@ -39,16 +39,18 @@ const Tab = ({ text, selected, setSelected }: TabProps) => {
     <button
       onClick={() => setSelected(text)}
       className={cn(
-        'relative rounded-md p-2 text-sm transition-all',
-        selected ? 'text-white' : 'text-slate-300 hover:font-black',
+        'relative cursor-pointer rounded-full px-4 py-1.5 text-sm font-semibold transition-colors',
+        selected
+          ? 'text-amber-700'
+          : 'text-zinc-500 hover:text-zinc-800',
       )}
     >
-      <p className="relative z-50 min-w-20">{text}</p>
+      <span className="relative z-10 tracking-tight">{text}</span>
       {selected && (
         <motion.span
           layoutId="tabs"
-          transition={{ type: 'spring', duration: 0.5 }}
-          className="absolute inset-0 rounded-sm bg-gradient-to-r from-neutral-600 to-neutral-600"
+          transition={{ type: 'spring', duration: 0.5, bounce: 0.2 }}
+          className="absolute inset-0 rounded-full bg-amber-50 ring-1 ring-amber-200"
         />
       )}
     </button>
