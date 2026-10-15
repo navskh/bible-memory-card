@@ -38,6 +38,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const version = process.env.APP_COMMIT_SHA?.slice(0, 7) ?? 'local';
+
   return (
     <html lang="ko">
       <head>
@@ -68,6 +70,12 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         <ServiceWorkerUpdater />
+        <div
+          aria-label={`배포 버전 ${version}`}
+          className="pointer-events-none fixed right-3 top-3 z-50 rounded-full border border-amber-200 bg-amber-50/95 px-2.5 py-1 font-mono text-[11px] font-semibold text-amber-800 shadow-sm backdrop-blur"
+        >
+          배포 {version}
+        </div>
         {children}
       </body>
     </html>
