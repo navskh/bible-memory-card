@@ -128,6 +128,8 @@ export default function CardSkew({
             setTransX(inrange(deltaX, -SLIDER_WIDTH + 10, SLIDER_WIDTH - 10));
           }
         },
+        onDragEnd: () => setTransX(0),
+        onDragCancel: () => setTransX(0),
       })}
       ref={containerRef}
       className={cn(

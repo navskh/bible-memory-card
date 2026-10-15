@@ -23,6 +23,7 @@ interface IMyCarouselProps {
 }
 
 const COMPLETION_ID = '__completion__';
+const SWIPE_THRESHOLD = 50;
 
 export default function MyCarousel({
   items: initialItems,
@@ -117,10 +118,16 @@ export default function MyCarousel({
               zIndex: index === 1 ? 3 : 1,
             }}
             {...registDragEvent({
-              onDragEnd: deltaX => {
-                if (deltaX < -50)
+              onDragEnd: (deltaX, deltaY) => {
+                if (
+                  Math.abs(deltaX) <= SWIPE_THRESHOLD ||
+                  Math.abs(deltaX) <= Math.abs(deltaY)
+                )
+                  return;
+
+                if (deltaX < 0)
                   setCurrentIndex(prev => (prev + 1) % totalSlots);
-                if (deltaX > 50)
+                else
                   setCurrentIndex(prev => (prev - 1 + totalSlots) % totalSlots);
               },
             })}
